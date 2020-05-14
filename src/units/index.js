@@ -1,10 +1,18 @@
 import { Toast } from 'antd-mobile'
+import ProgramConfig from '../programConfig.json'
+import Axios from "axios";
 
 // const api="http://116.62.163.143:81/stdempinfo/"
- const api="http://47.110.161.228:90/hydrocarbon/"
+ const api=ProgramConfig.hydrocarbonServer;
+
+//加载本地配置
+Axios.create().get('programConfig.json').then((result) => {
+	window.localStorage['hydrocarbonServer'] = result.data.hydrocarbonServer
+}).catch((error) => { console.log(error) });
+
 export default {
 	api(){
-		return api
+		return window.localStorage['hydrocarbonServer']?window.localStorage['hydrocarbonServer']:api;
 	},
 	formateDate(time) {
 		if(!time) return '';

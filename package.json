@@ -3,11 +3,12 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
-    "rc-form": "^2.4.0",
-    "react": "^16.8.3",
-    "react-dom": "^16.8.3",
+    "rc-form": "^2.4.11",
+    "axios": "^0.18.0",
+    "react": "^16.13.1",
+    "react-dom": "^16.13.1",
     "react-router-dom": "^4.3.1",
-    "react-scripts": "^2.1.5",
+    "react-scripts": "^2.1.8",
     "superagent": "^4.1.0"
   },
   "scripts": {
@@ -30,13 +31,13 @@
     "not op_mini all"
   ],
   "devDependencies": {
-    "antd-mobile": "^2.2.9",
-    "babel-plugin-import": "^1.12.0",
-    "css-loader": "^3.1.0",
+    "antd-mobile": "^2.3.2",
+    "babel-plugin-import": "^1.13.0",
+    "css-loader": "^3.5.3",
     "customize-cra": "^0.4.1",
-    "less": "^3.9.0",
+    "less": "^3.11.1",
     "less-loader": "^5.0.0",
-    "react-app-rewired": "^2.0.2-next.0",
+    "react-app-rewired": "^2.1.6",
     "style-loader": "^0.23.1"
   }
 }
