@@ -48,7 +48,7 @@ export default class ActTable extends Component {
 			this.props.history.push(`/${menuId}?pageNo=${data.pageNo}&pageSize=${data.pageSize}`)
 		}
 		Super.super({
-			url: `api2/entity/list/tmpl/${menuId}`,
+			url: `api2/entity/${menuId}/list/tmpl`,
 			method:'GET',
 			data:data,
 		}).then((res) => {
@@ -90,7 +90,7 @@ export default class ActTable extends Component {
 	queryList=(queryKey,data)=>{
         const {menuId}=this.state
 		Super.super({
-			url:`api2/entity/list/data/${queryKey}`,
+			url:`api2/entity/list/${queryKey}/data`,
 			method:'GET',
 			data           
 		}).then((res)=>{
@@ -216,7 +216,7 @@ export default class ActTable extends Component {
 	handelDelete = (code) => {
 		const {menuId} = this.state
 		Super.super({
-			url: `api2/entity/detail/${menuId}`,
+			url: `api2/entity/${menuId}/detail`,
 			method:'DELETE',
 			data: {
 				codes: code
@@ -238,7 +238,7 @@ export default class ActTable extends Component {
         const {queryKey,isSeeTotal}=this.state
         if(!isSeeTotal){
             Super.super({
-                url:`api2/entity/list/count/${queryKey}`,
+                url:`api2/entity/list/${queryKey}/count`,
 				method:'GET',
             }).then((res)=>{
                 this.setState({

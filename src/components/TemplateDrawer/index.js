@@ -45,7 +45,7 @@ export default class TemplateDrawer extends Component {
 			});
 		} else {
 			Super.super({
-				url:`api2/meta/tmpl/stmpl/detailGroup/${menuId}/${templateGroupId}`,
+				url:`api2/meta/tmpl/${menuId}/stmpl/detailGroup/${templateGroupId}`,
 				method:"GET",
 			}).then((res) => {
 				this.setState({
@@ -60,7 +60,7 @@ export default class TemplateDrawer extends Component {
 				})
 			})
 			Super.super({
-				url:`/api2/entity/entityQuery/detailGroup/${menuId}/${templateGroupId}`,
+				url:`/api2/entity/${menuId}/entityQuery/detailGroup/${templateGroupId}`,
 				method:"GET",
 				data:{
 					excepts,
@@ -73,7 +73,7 @@ export default class TemplateDrawer extends Component {
 	goPage = (queryKey,page) => {
 		const {fields,pageInfo}=this.state
 		Super.super({
-			url: `api2/entity/list/data/${queryKey}`,
+			url: `api2/entity/list/${queryKey}/data`,
 			method:'GET',
 			data: {pageNo:pageInfo?pageInfo.pageNo+page:1}
 		}).then((res) => {
@@ -105,7 +105,7 @@ export default class TemplateDrawer extends Component {
 		const {checkboxdata,fieldWords,templateGroupId,menuId,addModal} = this.state
 		const codes = checkboxdata.join(",")
 		Super.super({
-			url: `api2/entity/selecteor/selected/data/detailGroup/${menuId}/${templateGroupId}`,
+			url: `api2/entity/${menuId}/selecteor/selected/data/detailGroup/${templateGroupId}`,
 			method:'GET',
 			data: {
 				codes,

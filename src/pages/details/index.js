@@ -86,9 +86,9 @@ class Details extends Component {
 		});
 		let url
 		if(fieldGroupId){
-			url =`api2/meta/tmpl/dtmpl/rabc/${menuId}/${fieldGroupId}`
+			url =`api2/meta/tmpl/${menuId}/dtmpl/rabc/${fieldGroupId}`
 		}else{
-			url =`api2/meta/tmpl/dtmpl/normal/${menuId}/`
+			url =`api2/meta/tmpl/${menuId}/dtmpl/normal/`
 		}
 		Super.super({url,method:"GET",}).then((res) => {
 			const premises=res.config.premises
@@ -109,7 +109,7 @@ class Details extends Component {
 		const {menuId,code,fieldGroupId}=this.state
 		if(code){
 			Super.super({
-				url:`api2/entity/detail/${menuId}/${code}`,
+				url:`api2/entity/${menuId}/detail/${code}`,
 				method:'GET',
 				data:{
 					fieldGroupId
@@ -376,9 +376,9 @@ class Details extends Component {
 				}
 				let url
 				if(fieldGroupId){
-					url=`api2/entity/detail/rabc/${menuId}/${fieldGroupId}`
+					url=`api2/entity/${menuId}/detail/rabc/${fieldGroupId}`
 				}else{
-					url=`api2/entity/detail/normal/${menuId}`
+					url=`api2/entity/${menuId}/detail/normal`
 				}
 				Super.super({
 					url,

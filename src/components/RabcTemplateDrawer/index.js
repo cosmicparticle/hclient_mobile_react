@@ -22,7 +22,7 @@ export default class RabcTemplateDrawer extends Component {
         })
         let dfieldIds=arr.join(",")
 		Super.super({
-			url: `api2/entity/selecteor/selected/data/detailGroup/${menuId}/${fieldGroupId}`,
+			url: `api2/entity/${menuId}/selecteor/selected/data/detailGroup/${fieldGroupId}`,
             method:'GET',
 			data: {
 				codes,
