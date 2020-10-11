@@ -1,5 +1,6 @@
 import React, {Component} from 'react'
 import { ImagePicker } from 'antd-mobile';
+import RcViewer from '@hanyk/rc-viewer'
 
 export default class ImgBox extends Component {
 
@@ -11,6 +12,7 @@ export default class ImgBox extends Component {
 		let files=this.props.files;
 			this.setState({
 				files,
+				imgUrl:files?files[0]?files[0].url:"":"",
 			});
 	}
 	componentWillReceiveProps(nextProps) {
@@ -25,6 +27,7 @@ export default class ImgBox extends Component {
 			let files=nextProps.files;
 			this.setState({
 				files,
+				imgUrl:files?files[0]?files[0].url:"":"",
 				receivedFilesProps:true,
 			});
 		}
@@ -50,18 +53,34 @@ export default class ImgBox extends Component {
 			onChange(changedValue);
 		}
 	}
+
+
+
+	onImageClick=(index,files)=>{
+		const { viewer } = this.refs.viewer;
+		let imgUrl=files[index].url;
+		this.setState({
+			imgUrl,
+		});
+		// "<img src='http://121.196.184.205:96/hydrocarbon/download-files/934ad7ce5c53631ed716e84f69949631/Capture001.png' />"
+
+		viewer.show()
+	}
 	render() {
 		//let files=this.state.files&&this.state.files.length>0?this.state.files:this.props.files;
-		let files=this.state.files;
+		let {files,imgUrl}=this.state;
 		return(
 			<div>
                 <ImagePicker
                     files={files}
                     onChange={this.onChange}
-                    onImageClick={(index, fs) => console.log(index, fs)}
+                    onImageClick={this.onImageClick}
                     selectable={files.length < 1}
                     multiple={false}
                 />
+				<RcViewer options={{}} ref='viewer'  >
+					<img style={{display:'none'}} src={imgUrl} alt=""/>
+				</RcViewer>
             </div>
 		)
 	}
