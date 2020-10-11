@@ -310,7 +310,7 @@ export default class ActTable extends Component {
                                     <Card.Body>
                                         <List>
                                             {item.fields?item.fields.map(it =>
-                                                <Item key={it.title} extra={it.value}>{it.title}&nbsp;:</Item>
+                                                <Item key={it.title} extra={it.value?it.value.indexOf("@R@")>0?it.value.split("@R@")[1]:it.value:it.value}>{it.title}&nbsp;:</Item>
                                             ):""}
                                         </List>
                                     </Card.Body>

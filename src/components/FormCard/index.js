@@ -15,7 +15,10 @@ export default class FormCard extends Component {
 
 		if(formList) {
 			const fieldName = formList.name
-			const fieldValue = formList.value
+			let fieldValue = formList.value;
+			if(fieldValue && fieldValue.indexOf("@R@")>0){
+				fieldValue=fieldValue.split("@R@")[1];
+			}
 			const title = formList.title
             const fieldId = formList.fieldId
             const validators = formList.validators
