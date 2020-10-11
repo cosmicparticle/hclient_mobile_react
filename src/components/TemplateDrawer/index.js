@@ -75,7 +75,7 @@ export default class TemplateDrawer extends Component {
 		Super.super({
 			url: `api2/entity/list/${queryKey}/data`,
 			method:'GET',
-			data: {pageNo:pageInfo?pageInfo.pageNo+page:1}
+			query: {pageNo:pageInfo?pageInfo.pageNo+page:1}
 		}).then((res) => {
 			res.entities.forEach((item)=>{
 				item.lists=[]

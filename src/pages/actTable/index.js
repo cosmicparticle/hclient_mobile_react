@@ -21,22 +21,28 @@ export default class ActTable extends Component {
 		menuId:this.props.match.params.menuId
 	}
 	componentDidMount() {
-		const {menuId}=this.state
-		this.requestList(menuId)
+		const {menuId,url}=this.state
+		if(url) {
+			this.requestList(menuId, Units.urlToObj(url),true)
+		} else {
+			Storage[`${menuId}`]=null //刷新列表数据
+			this.requestList(menuId)
+		}
 	}
 	componentWillUnmount() {
 		clearTimeout(this.closeTimer);
 	}
 	componentWillReceiveProps(nextProps){
 		const {menuId} = nextProps.match.params
-		this.setState({menuId})
+		this.setState({menuId,url})
 		const url = decodeURI(this.props.history.location.search) //获取url参数(页码)，并解码
-		if(url) {
-			this.requestList(menuId, Units.urlToObj(url),true)
-		} else {
-            Storage[`${menuId}`]=null //刷新列表数据
-			this.requestList(menuId)
-		}
+		this.setState({menuId,url})
+		// if(url) {
+		// 		// 	this.requestList(menuId, Units.urlToObj(url),true)
+		// 		// } else {
+		//         //     Storage[`${menuId}`]=null //刷新列表数据
+		// 		// 	this.requestList(menuId)
+		// 		// }
 
 	}
 	//isPushUrl=true时，后退获得的url已有参数，不需要push链接,不然会报错
@@ -92,7 +98,7 @@ export default class ActTable extends Component {
 		Super.super({
 			url:`api2/entity/list/${queryKey}/data`,
 			method:'GET',
-			data           
+			query:data
 		}).then((res)=>{
 			Storage[`${menuId}`]=res
 			this.sessionTodo(res)
