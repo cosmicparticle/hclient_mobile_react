@@ -54,9 +54,9 @@ class Nav extends Component {
 		this.setState({
 			show: true,
 		});
-		document.addEventListener('touchmove', this.bodyScroll, {
-			passive: false
-		})
+		// document.addEventListener('touchmove', this.bodyScroll, {
+		// 	passive: false
+		// })
 		if(!this.state.initData) {
 			setTimeout(() => {
 				this.setState({
