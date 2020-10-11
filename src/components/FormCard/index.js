@@ -6,7 +6,10 @@ import CasePicker from './../CasePicker'
 import MultiplePicker from './../MultiplePicker'
 
 export default class FormCard extends Component {
+	onChangeImg = (files,type) => {
+		console.log(files, type);
 
+	}
 	initFormList = () => {
         const {formList,optionsMap,getFieldProps} = this.props
 
@@ -124,6 +127,7 @@ export default class FormCard extends Component {
 				}] : []
 				const imgPick = <ImgBox 
                                 files={files}
+								onChange1={this.onChangeImg}
                                 {...getFieldProps(fieldName)}
                                 />
 				return <div>

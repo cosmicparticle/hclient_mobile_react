@@ -60,9 +60,9 @@ export default class TemplateDrawer extends Component {
 				})
 			})
 			Super.super({
-				url:`/api2/entity/${menuId}/entityQuery/detailGroup/${templateGroupId}`,
+				url:`api2/entity/${menuId}/selector/key/detailGroup/${templateGroupId}`,
 				method:"GET",
-				data:{
+				query:{
 					excepts,
 				}              
 			}).then((res)=>{
@@ -107,7 +107,7 @@ export default class TemplateDrawer extends Component {
 		Super.super({
 			url: `api2/entity/${menuId}/selecteor/selected/data/detailGroup/${templateGroupId}`,
 			method:'GET',
-			data: {
+			query: {
 				codes,
 				dfieldIds: fieldWords,
 			}

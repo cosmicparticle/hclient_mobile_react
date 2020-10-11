@@ -364,6 +364,8 @@ class Details extends Component {
 							}
 						})
 						delete values[k] // 删除原始的对象数据
+					}else if(values[k]==="removefile"){
+						values[k]="";
 					}else if(!values[k]){
 						delete values[k]
 					}
@@ -579,11 +581,11 @@ class Details extends Component {
 														<span className = "iconfont"
 															onClick = {() => this.addList(item)} > &#xe63d;
 														</span> 
-														{selectionTemplateId && dialogSelectType? 
+
 														<span className = "iconfont"
 															onClick = {() => this.SelectTemplate.onOpenChange(item)} >
 															&#xe6f4; 
-														</span>:null}
+														</span>
 														{rabcTemplatecreatable && !isDrawer? // 判断是否是弹出的抽屉
 														<span className = "iconfont"
 															onClick = {() =>this.editTemplate(true,null,item.id)} >

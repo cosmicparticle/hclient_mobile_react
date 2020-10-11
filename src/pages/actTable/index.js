@@ -50,7 +50,7 @@ export default class ActTable extends Component {
 		Super.super({
 			url: `api2/entity/${menuId}/list/tmpl`,
 			method:'GET',
-			data:data,
+			query:data,
 		}).then((res) => {
 			document.removeEventListener('touchmove', this.bodyScroll, {
 				passive: false

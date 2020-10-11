@@ -7,6 +7,13 @@ import MultiplePicker from './../MultiplePicker'
 
 export default class EditList extends Component {
 
+    onChangeImg = (files,type) => {
+
+        console.log(files, type);
+
+
+    }
+
     initFormList = () => {
         const {formList,optionsMap,getFieldProps,isDrawer,rabcTemplateupdatable} = this.props
         const formItemList=[]; 
@@ -69,6 +76,7 @@ export default class EditList extends Component {
                     }] : []
                     const imgPick = <ImgBox 
                         files={files}
+                        onChange1={this.onChangeImg}
                         {...getFieldProps(fieldName)}
                         />
                     const File= <div key={key}>

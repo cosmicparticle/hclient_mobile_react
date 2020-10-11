@@ -24,7 +24,7 @@ export default class RabcTemplateDrawer extends Component {
 		Super.super({
 			url: `api2/entity/${menuId}/selecteor/selected/data/detailGroup/${fieldGroupId}`,
             method:'GET',
-			data: {
+			query: {
 				codes,
 				dfieldIds,
 			}
