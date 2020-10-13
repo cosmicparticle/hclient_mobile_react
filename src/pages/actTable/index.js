@@ -82,7 +82,8 @@ export default class ActTable extends Component {
 					searchList: res.ltmpl.criterias,
 					showDrawer: false,
 					searchFieldIds:fieldIds,
-					animating: false
+					animating: false,
+					tmplGroup:res.tmplGroup,
 				})
 				if(Storage[`${menuId}`] && !data){
 					const res= Storage[`${menuId}`]
@@ -254,25 +255,35 @@ export default class ActTable extends Component {
         }       
     }
 	render() {
-		const {menuTitle,list,showDrawer,searchList,optArr,pageInfo,animating,isSeeTotal,isStat} = this.state
+		const {menuTitle,list,showDrawer,searchList,optArr,pageInfo,animating,isSeeTotal,isStat,tmplGroup} = this.state
 		const data =Storage.menuList
-		let actPop
+		let actPop;
+
+		const hideCreateButton=tmplGroup?tmplGroup.hideCreateButton:null;
+		const hideDeleteButton=tmplGroup?tmplGroup.hideDeleteButton:null;
+		const hideQueryButton=tmplGroup?tmplGroup.hideQueryButton:null;
 		if(isStat){
 			actPop = [
 				(<Itempop key="5" value="home" icon={<span className="iconfont">&#xe62f;</span>}>首页</Itempop>),
 				(<Itempop key="1" value="user" icon={<span className="iconfont">&#xe74c;</span>}>用户</Itempop>),
-				(<Itempop key="3" value="search" icon={<span className="iconfont">&#xe72f;</span>}>筛选</Itempop>),
 				(<Itempop key="2" value="login" icon={<span className="iconfont">&#xe739;</span>}>退出</Itempop>),
 			]
 		}else{
 			actPop = [
 				(<Itempop key="5" value="home" icon={<span className="iconfont">&#xe62f;</span>}>首页</Itempop>),
 				(<Itempop key="1" value="user" icon={<span className="iconfont">&#xe74c;</span>}>用户</Itempop>),
-				(<Itempop key="3" value="search" icon={<span className="iconfont">&#xe72f;</span>}>筛选</Itempop>),
-				(<Itempop key="4" value="create" icon={<span className="iconfont">&#xe60a;</span>}>创建</Itempop>),
+
 				(<Itempop key="2" value="login" icon={<span className="iconfont">&#xe739;</span>}>退出</Itempop>),
 			]
+			if(!hideCreateButton){
+				actPop.push(<Itempop key="4" value="create" icon={<span className="iconfont">&#xe60a;</span>}>创建</Itempop>);
+			}
+
 		}
+		if(!hideQueryButton) {
+			actPop.push(<Itempop key="3" value="search" icon={<span className="iconfont">&#xe72f;</span>}>筛选</Itempop>);
+		}
+
 		const sidebar = (<SearchForm 
                             searchList={searchList} 
                             optArr={optArr} 
@@ -302,7 +313,8 @@ export default class ActTable extends Component {
 										title={<span style={{color:"#ccc"}}>
 											{pageInfo?((pageInfo.pageNo-1)*pageInfo.pageSize+index+1):""}
 										</span>}
-                                        extra={isStat?null:<span 
+
+                                        extra={isStat || hideDeleteButton?null:<span
                                             className="iconfont" 
                                             onClick={(e)=>this.showAlert(item.code,e)}
                                             >&#xe676;</span>}

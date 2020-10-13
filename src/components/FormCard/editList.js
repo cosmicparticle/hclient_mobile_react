@@ -1,5 +1,6 @@
 import React, {Component} from 'react'
 import FormCard from './index'
+import Units from './../../units'
 import { DatePicker, List, InputItem, Badge,TextareaItem } from 'antd-mobile';
 import ImgBox from './../ImgBox'
 import SelectPicker from './../SelectPicker'
@@ -9,7 +10,7 @@ import MultiplePicker from './../MultiplePicker'
 export default class EditList extends Component {
 
     initFormList = () => {
-        const {formList,optionsMap,getFieldProps,isDrawer,rabcTemplateupdatable,formItemValueOnChange} = this.props
+        const {formList,optionsMap,getFieldProps,isDrawer,rabcTemplateupdatable,formItemValueOnChange,unallowedDelete,rabcUnupdatable} = this.props
         const formItemList=[];
         let code;
         let namePrefix
@@ -24,22 +25,23 @@ export default class EditList extends Component {
 
                 const type=item.type;
                 const key=item.code+index
-                if(type === "deletebtn"){
+                if(type === "deletebtn" ){
                         const deletebtn=<p className="deteleLine" key={key}>
-                            {!isDrawer && rabcTemplateupdatable?<span
+                            {unallowedDelete?null:
+                                <span
+                                    className="iconfont"
+                                    style={{float:"right",top:"0"}}
+                                    onClick={this.props.deleteList}
+                                >&#xe676;</span>}
+                            {!isDrawer && !rabcUnupdatable?<span
                                 className="iconfont"
-                                style={{float:"left",top:"5px",left:'10px'}}
+                                style={{float:"right",top:"5px",right:'10px'}}
                                 onClick={this.props.editTemplate}
                             >&#xe8ae;</span>:null}
-                            <span
-                                className="iconfont"
-                                style={{float:"right",top:"0"}}
-                                onClick={this.props.deleteList}
-                            >&#xe676;</span>
                         </p>
                         formItemList.unshift(deletebtn)
                 }else{
-                    const formIt= <FormCard key={key} formItemValueOnChange={formItemValueOnChange}
+                    const formIt= <FormCard key={Units.RndNum(9)} formItemValueOnChange={formItemValueOnChange}
                         formItem={item} getFieldProps={getFieldProps} optionsMap={optionsMap}
                     ></FormCard>
                     formItemList.push(formIt);
@@ -62,7 +64,7 @@ export default class EditList extends Component {
                 value:code,
                 title:'唯一编码',
             }
-            let codeFormItem=  <FormCard key={code+1}  formItemValueOnChange={formItemValueOnChange} formItem={codeItem} getFieldProps={getFieldProps} optionsMap={optionsMap}
+            let codeFormItem=  <FormCard key={Units.RndNum(9)}  formItemValueOnChange={formItemValueOnChange} formItem={codeItem} getFieldProps={getFieldProps} optionsMap={optionsMap}
             ></FormCard>
 
             formItemList.push(codeFormItem);

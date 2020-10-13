@@ -99,6 +99,8 @@ class Details extends Component {
 		Super.super({url,method:"GET",}).then((res) => {
 			const premises=res.config.premises
 			const menuTitle=res.menu?res.menu.title:null
+			const buttonStatus=res.config.buttonStatus
+			const actions=res.config.actions
 			const {scrollIds}=this.state
 			if(premises && premises.length>0){
 				scrollIds.push("默认字段（不可修改）")
@@ -107,7 +109,11 @@ class Details extends Component {
 					scrollIds,
 				})
 			}
-			let dtmplGroup=this.requestSelect(res.config.dtmpl.groups)			
+			let dtmplGroup=this.requestSelect(res.config.dtmpl.groups)
+			this.setState({
+				buttonStatus,
+				actions
+			})
 			this.loadData(dtmplGroup,menuTitle)				
 		})
 	}	
@@ -117,13 +123,14 @@ class Details extends Component {
 			Super.super({
 				url:`api2/entity/${menuId}/detail/${code}`,
 				method:'GET',
-				data:{
+				query:{
 					fieldGroupId
 				}       
 			}).then((resi)=>{
 				const fieldMap=Units.forPic(resi.entity.fieldMap)  
 				const arrayMap=resi.entity.arrayMap
 				const dataTitle=resi.entity.title
+
 				for(let i in arrayMap){
 					arrayMap[i].forEach((item)=>{
 						item.fieldMap.code=item.code
@@ -273,7 +280,8 @@ class Details extends Component {
 		const relaOptions = []
 		let flag=false // 是否添加关系
 		const totalname=list.composite.cname
-		const code=Units.RndNum(9)
+		// const code=Units.RndNum(9)
+		const code=list.code?list.code:Units.RndNum(9);
 		const len=list.lists.length
 		if(list.composite){
 			const deletebtn = {
@@ -326,6 +334,8 @@ class Details extends Component {
 			list:record,
 			code
 		}
+		//如果之前已存在，如编辑的情况，移除原本的数据
+		this.deleteList(code)
 		list.lists.unshift(res)
 		dtmplGroup.forEach((item,index)=>{
 			if(item.id===list.id){
@@ -336,7 +346,7 @@ class Details extends Component {
 			dtmplGroup
 		})
 	}
-	handleSubmit = () => {
+	handleSubmit = (actionId) => {
 		const {code,menuId,dtmplGroup,fieldGroupId,valueChangedItemNameList}=this.state
 		this.setState({animating: true});
 		this.props.form.validateFields({force: true}, (err, values) => { // 提交再次验证
@@ -393,6 +403,9 @@ class Details extends Component {
 				for(let k in values) {
 					formData.append(k, values[k]);
 				}
+				if(actionId){
+					formData.append('%actionId%', actionId);
+				}
 				let url
 				if(fieldGroupId){
 					url=`api2/entity/${menuId}/detail/rabc/${fieldGroupId}`
@@ -406,10 +419,10 @@ class Details extends Component {
 				},'formdata').then((res)=>{
 					this.setState({animating: false,showRabcTempDrawer:false});
 					if(res && res.status==="suc"){
-						Toast.success("保存成功！")
+						Toast.success("成功！")
 						if(menuId!=="user"){
 							if(!this.props.match){
-								this.props.loadEntites(res.code,fieldGroupId)
+								this.props.loadEntites(res.entityCode,fieldGroupId)
 							}else{
 								this.props.history.push(`/${menuId}`)
 							}
@@ -429,6 +442,7 @@ class Details extends Component {
 	}
 	loadTemplate = (entities,addModal) => {
 		entities.forEach((item)=>{
+			addModal.code=item.唯一编码;
 			for(let k in item.byDfieldIds){
 				addModal.fields.forEach((it)=>{
 					if(k===it.id.toString()){
@@ -466,6 +480,11 @@ class Details extends Component {
 			this.handleSubmit()
 		} else if(value === "nav") {
 			this.handleNavAt()
+		}else if(typeof value === "object") {
+			if(value.type==="action"){
+				this.handleSubmit(value.actionId)
+			}
+
 		}else{
 			this.props.history.push(`/${value}`)
 		}
@@ -519,7 +538,7 @@ class Details extends Component {
 		const data = Storage.menuList
 		const {getFieldProps} = this.props.form;
 		const {dtmplGroup,optionsMap,animating,headerName,menuId,visibleNav,scrollIds,tempCode,premises,
-			showRabcTempDrawer,groupId,isDrawer} = this.state
+			showRabcTempDrawer,groupId,isDrawer,buttonStatus,actions} = this.state
 		if(premises && premises.length>0 && dtmplGroup){
 			dtmplGroup.forEach((item)=>{
 				if(!item.composite){
@@ -543,10 +562,22 @@ class Details extends Component {
 		const detailPop = [
 			( <Itempop key="5" value="home" icon={ <span className="iconfont" > &#xe62f; </span>}>首页</Itempop> ),
 			( <Itempop key="1" value="user" icon={ <span className="iconfont" > &#xe74c; </span>}>用户</Itempop> ),
-			( <Itempop key="3" value="save" icon={ <span className="iconfont" > &#xe61a; </span>}>保存</Itempop> ),
+			// ( <Itempop key="3" value="save" icon={ <span className="iconfont" > &#xe61a; </span>}>保存</Itempop> ),
 			( <Itempop key="4" value="nav" icon={ <span className="iconfont" > &#xe611; </span>}>导航</Itempop> ),
 			( <Itempop key="2" value="login" icon={ <span className="iconfont" > &#xe739; </span>}>退出</Itempop> ),
 		]
+
+		if(buttonStatus && buttonStatus.saveButton){
+			detailPop.push(<Itempop key="3" value="save" icon={ <span className="iconfont" > &#xe61a; </span>}>保存</Itempop> );
+		}
+		if(actions){
+			actions.forEach((action)=>{
+				detailPop.push(<Itempop key="3" value={{'type':'action','actionId':action.id}} icon={ <span className="iconfont" > &#xe61a; </span>}>{action.title}</Itempop> )
+			})
+		}
+
+
+
 		const drawerPop=[
 			( <Itempop key="3" value="save" icon={ <span className="iconfont" > &#xe61a; </span>}>保存</Itempop> ),
 		]
@@ -575,16 +606,18 @@ class Details extends Component {
 						{dtmplGroup && dtmplGroup.map((item, i) => {
 							const selectionTemplateId=item.selectionTemplateId
 							const dialogSelectType=item.dialogSelectType
+							const haveTemplate=(selectionTemplateId || item.rabcTemplateGroupId || item.rabcTreeTemplateId)?true:false
 							const rabcUncreatable=item.rabcUncreatable
 							const rabcUnupdatable=item.rabcUnupdatable
 							const rabcTemplateGroupId=item.rabcTemplateGroupId
-							
+							const unallowedCreate=item.unallowedCreate
+							const unallowedDelete=item.unallowedDelete
 							let rabcTemplatecreatable=false
 							let rabcTemplateupdatable=false
-							if(rabcTemplateGroupId && rabcUncreatable===null){
+							if(rabcTemplateGroupId && rabcUncreatable!=1 ){
 								rabcTemplatecreatable=true
 							}
-							if(rabcTemplateGroupId && rabcUnupdatable===null){
+							if(rabcTemplateGroupId && rabcUnupdatable!=1){
 								rabcTemplateupdatable=true
 							}
 							return <List
@@ -595,19 +628,21 @@ class Details extends Component {
 												<span> {item.title}{item.composite && item.lists?`(共${item.lists.length}条)`:null} </span>
 												{item.composite ?
 													<div className = "detailButtons" >
+														{unallowedCreate?null:
 														<span className = "iconfont"
 															onClick = {() => this.addList(item)} > &#xe63d;
-														</span> 
-
-														<span className = "iconfont"
-															onClick = {() => this.SelectTemplate.onOpenChange(item)} >
+														</span>}
+														{haveTemplate && !isDrawer ?
+															<span className="iconfont"
+																  onClick={() => this.SelectTemplate.onOpenChange(item)}>
 															&#xe6f4; 
-														</span>
+														</span>:null
+														}
 														{rabcTemplatecreatable && !isDrawer? // 判断是否是弹出的抽屉
 														<span className = "iconfont"
 															onClick = {() =>this.editTemplate(true,null,item.id)} >
 															&#xe61b;
-														</span>:null}														
+														</span>	:null}
 													</div>:null
 												} 
 											</div>}
@@ -617,8 +652,10 @@ class Details extends Component {
 									{item.composite && item.lists?
 										item.lists.map((it,index)=>{
 											if(index<=item.limitLen){
-												return <div key={it.code+index}>
+												return <div key={Units.RndNum(9)}>
 															<EditList
+																rabcUnupdatable={!rabcTemplateupdatable}
+																unallowedDelete={unallowedDelete}
 																formItemValueOnChange={this.formItemValueOnChange}
 																formList = {it}
 																getFieldProps = {getFieldProps}
@@ -626,7 +663,7 @@ class Details extends Component {
 																isDrawer={isDrawer}
 																rabcTemplateupdatable={rabcTemplateupdatable}
 																deleteList = {(e) => this.showAlert(it.code, e)}
-																editTemplate={()=>this.editTemplate(true,it.code,item.id)}
+																editTemplate={rabcUnupdatable?null:()=>this.editTemplate(true,it.code,item.id)}
 															/>
 															{index===item.limitLen && item.lists.length>item.limitLen+1?
 															<span 
@@ -644,8 +681,10 @@ class Details extends Component {
 															:null}
 														</div>
 											}else{
-												return 	<div key={it.code+index} style={{display:"none"}}>
+												return 	<div key={Units.RndNum(9)} style={{display:"none"}}>
 															<EditList
+																rabcUnupdatable={rabcUnupdatable}
+																unallowedDelete={unallowedDelete}
 																formItemValueOnChange={this.formItemValueOnChange}
 																formList = {it}
 																getFieldProps = {getFieldProps}
@@ -653,14 +692,14 @@ class Details extends Component {
 																isDrawer={isDrawer}
 																rabcTemplateupdatable={rabcTemplateupdatable}
 																deleteList = {(e) => this.showAlert(it.code, e)}
-																editTemplate={()=>this.editTemplate(true,it.code,item.id)}
+																editTemplate={rabcUnupdatable?null:()=>this.editTemplate(true,it.code,item.id)}
 															/>
 														</div>
 												}																					
 										}):
 										item.fields.map((it, index) => {
 											if(index<=item.limitLen){
-												return <div key = {it.id+index}>
+												return <div key = {Units.RndNum(9)}>
 															<DivFormCard
 																formItemValueOnChange={this.formItemValueOnChange}
 																formItem = {it}
@@ -683,7 +722,7 @@ class Details extends Component {
 															:null}
 														</div>
 											}else{
-												return 	<div key = {it.id+index} style={{display:"none"}}>
+												return 	<div key = {Units.RndNum(9)} style={{display:"none"}}>
 															<DivFormCard
 																formItemValueOnChange={this.formItemValueOnChange}
 																formItem = {it}
