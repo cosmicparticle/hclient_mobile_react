@@ -3,7 +3,7 @@ import { List, Toast, Popover, ActivityIndicator, Modal, Button, } from 'antd-mo
 import { createForm } from 'rc-form';
 import Nav from './../../components/Nav'
 import Super from './../../super'
-import FormCard from './../../components/FormCard'
+import DivFormCard from './../../components/FormCard/divformcard'
 import Units from './../../units'
 import TemplateDrawer from './../../components/TemplateDrawer'
 import EditList from './../../components/FormCard/editList'
@@ -26,7 +26,8 @@ class Details extends Component {
 		isDrawer:this.props.match?false:true,
 		menuId:this.props.match?this.props.match.params.menuId:this.props.menuId,
 		code:this.props.match?this.props.match.params.code:this.props.code,
-		fieldGroupId:this.props.match?null:this.props.fieldGroupId
+		fieldGroupId:this.props.match?null:this.props.fieldGroupId,
+		valueChangedItemNameList:[]
 	}
 	componentDidMount() {
 		if(this.props.menuId==="user"){
@@ -66,6 +67,7 @@ class Details extends Component {
 				}
 			}
 		}
+
 		const lis = document.getElementsByClassName("am-list-header")
 		if(lis && mainTopArr.length > 0) {
 			for(let i = 0; i < lis.length; i++) {
@@ -79,6 +81,10 @@ class Details extends Component {
 			}
 		}
 	}
+	formItemValueOnChange=(name)=>{
+		this.state.valueChangedItemNameList.push(name);
+	}
+
 	loadRequest = () => {
 		const {menuId,fieldGroupId} = this.state
 		this.setState({
@@ -331,7 +337,7 @@ class Details extends Component {
 		})
 	}
 	handleSubmit = () => {
-		const {code,menuId,dtmplGroup,fieldGroupId}=this.state
+		const {code,menuId,dtmplGroup,fieldGroupId,valueChangedItemNameList}=this.state
 		this.setState({animating: true});
 		this.props.form.validateFields({force: true}, (err, values) => { // 提交再次验证
 			if(!err){
@@ -342,7 +348,12 @@ class Details extends Component {
 				})
 				for(let k in values){
 					if(values[k] && values[k] instanceof Date){ // 判断时间格式
-						values[k]=Units.dateToString(values[k])
+						if(!valueChangedItemNameList.includes(k)){//不修改不提交
+							delete values[k]
+						}else{
+							values[k]=Units.dateToString(values[k])
+						}
+
 					}else if(values[k] && typeof values[k] === "object" && Array.isArray(values[k])){
 						const totalName = k
 						values[k].forEach((item, index) => {
@@ -359,7 +370,9 @@ class Details extends Component {
 								} else if(item[e] === undefined) {
 									delete item[e] // 删除未更改的图片数据
 								} else {
-									values[`${totalName}[${index}].${e}`] = item[e]
+									if(valueChangedItemNameList.includes(`${totalName}[${index}].${e}`)){
+										values[`${totalName}[${index}].${e}`] = item[e]
+									}
 								}
 							}
 						})
@@ -368,6 +381,10 @@ class Details extends Component {
 						values[k]="";
 					}else if(!values[k]){
 						delete values[k]
+					}else{//不修改的不提交
+						if(!valueChangedItemNameList.includes(k)){
+							delete values[k]
+						}
 					}
 				}
 				console.log(values)
@@ -398,7 +415,7 @@ class Details extends Component {
 							}
 						}						
 					}else{
-						Toast.fail("保存失败!")
+						Toast.fail("保存失败!"+res.message)
 					}
 				})
 			}else{
@@ -546,8 +563,8 @@ class Details extends Component {
 							id="默认字段（不可修改）">
 							<div className = "fixedDiv" > </div>	
 							{premises.map((item,index)=>
-								<FormCard
-									formList = {item}
+								<DivFormCard
+									formItem = {item}
 									getFieldProps = {getFieldProps}
 									key={"默认字段（不可修改）"+index}
 								/>
@@ -602,6 +619,7 @@ class Details extends Component {
 											if(index<=item.limitLen){
 												return <div key={it.code+index}>
 															<EditList
+																formItemValueOnChange={this.formItemValueOnChange}
 																formList = {it}
 																getFieldProps = {getFieldProps}
 																optionsMap = {optionsMap}
@@ -628,6 +646,7 @@ class Details extends Component {
 											}else{
 												return 	<div key={it.code+index} style={{display:"none"}}>
 															<EditList
+																formItemValueOnChange={this.formItemValueOnChange}
 																formList = {it}
 																getFieldProps = {getFieldProps}
 																optionsMap = {optionsMap}
@@ -642,8 +661,9 @@ class Details extends Component {
 										item.fields.map((it, index) => {
 											if(index<=item.limitLen){
 												return <div key = {it.id+index}>
-															<FormCard
-																formList = {it}
+															<DivFormCard
+																formItemValueOnChange={this.formItemValueOnChange}
+																formItem = {it}
 																getFieldProps = {getFieldProps}
 																optionsMap = {optionsMap}
 															/>
@@ -664,8 +684,9 @@ class Details extends Component {
 														</div>
 											}else{
 												return 	<div key = {it.id+index} style={{display:"none"}}>
-															<FormCard
-																formList = {it}
+															<DivFormCard
+																formItemValueOnChange={this.formItemValueOnChange}
+																formItem = {it}
 																getFieldProps = {getFieldProps}
 																optionsMap = {optionsMap}
 															/>

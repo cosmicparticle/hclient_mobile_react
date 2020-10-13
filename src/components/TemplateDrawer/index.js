@@ -159,7 +159,7 @@ export default class TemplateDrawer extends Component {
                                 <List key={item.code}>
 									<CheckboxItem onChange={() => this.changeCheckbox(item.code)}>
 										{item.lists.map(it =>
-											<List.Item.Brief inline key={it.key}>{it.title}&nbsp;:&nbsp;{it.value}</List.Item.Brief>                                              
+											<List.Item inline wrap={true} key={it.key}>{it.title}&nbsp;:&nbsp;{it.value}</List.Item>
 										)}
 									</CheckboxItem>
 								</List>

@@ -11,12 +11,12 @@ export default class MultiplePicker extends Component {
 	bodyScroll = (e) => {
 		e.preventDefault();
 	}
-	showModal = (formList) => (e) => {
+	showModal = (formItem) => (e) => {
 		document.addEventListener('touchmove', this.bodyScroll, {
 			passive: false
 		})
 		const {optionsMap} = this.props
-		const {fieldId,value} = formList
+		const {fieldId,value} = formItem
 		let optdata = []
 		if(optionsMap) {
 			for(let k in optionsMap) {
@@ -54,15 +54,15 @@ export default class MultiplePicker extends Component {
 	}
 	onCloseMul = () => {
 		const {optdata} = this.state
-		let {formList} = this.props
+		let {formItem} = this.props
 		const res = []
 		optdata.forEach((item) => {
 			if(item.checked) {
 				res.push(item.value)
 			}
 		})
-		formList.value = res.join(",")
-		this.triggerChange(formList.value);
+		formItem.value = res.join(",")
+		this.triggerChange(formItem.value);
 		this.onClose()
 	}
 	triggerChange = (changedValue) => {
@@ -83,14 +83,15 @@ export default class MultiplePicker extends Component {
 		})
 	}
 	render() {
-		const {formList} = this.props
+		const {formItem,disabled} = this.props
 		const {optdata,vismodal} = this.state
-		const {title,fieldId,value} = formList
+		const {title,fieldId,value} = formItem
 		return(
 			<div>
                 <InputItem
                     value={value}
-                    onClick={this.showModal(formList)}
+					editable={disabled}
+                    onClick={this.showModal(formItem)}
                     placeholder={`请选择${title}`}
                     key={fieldId}
                     editable={false}

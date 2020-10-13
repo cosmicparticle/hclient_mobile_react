@@ -16,15 +16,15 @@ export default class CasePicker extends Component {
 		ikey: [],
 		tagStr: []
 	}
-	showModal = (formList) => (e) => {
-		console.log(formList)
+	showModal = (formItem) => (e) => {
+		console.log(formItem)
 		document.addEventListener('touchmove', this.bodyScroll, {
 			passive: false
 		})
-		let caseList = formList.value
+		let caseList = formItem.value
 		let {tagStr} = this.state
-		const optGroupId = formList.optionGroupKey.split("@")[0]
-		const num = formList.optionGroupKey.split("@")[1]
+		const optGroupId = formItem.optionGroupKey.split("@")[0]
+		const num = formItem.optionGroupKey.split("@")[1]
 		if(caseList) {
 			tagStr = caseList.split("->")
 			tagStr = Units.uniq(tagStr)
@@ -142,8 +142,8 @@ export default class CasePicker extends Component {
 	};
 	onCloseCase = () => {
 		let {caseList} = this.state
-		let {formList} = this.props
-		formList.value = caseList //最后按确定键，将值传出
+		let {formItem} = this.props
+		formItem.value = caseList //最后按确定键，将值传出
 		this.triggerChange(caseList);
 		this.onClose()
 		this.setState({
@@ -173,14 +173,15 @@ export default class CasePicker extends Component {
 		e.preventDefault();
 	}
 	render() {
-		const {formList} = this.props
+		const {formItem,disabled} = this.props
 		const {changeselset,caseModal,options,radiokey,changeTag,ikey,tagStr} = this.state
-		const {value,title,fieldId} = formList
+		const {value,title,fieldId} = formItem
 		return(
 			<div>
                 <InputItem
                     value={value}
-                    onClick={this.showModal(formList)}
+					editable={disabled}
+                    onClick={this.showModal(formItem)}
                     placeholder={`请选择${title}`}
                     key={fieldId}
                     editable={false}
