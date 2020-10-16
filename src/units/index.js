@@ -166,7 +166,7 @@ export default {
 	forPic(fieldMap){ //原始数据的图片url转化为图片
 		for(let i in fieldMap){
 			if(fieldMap[i] && typeof fieldMap[i]==="string" && fieldMap[i].includes("download-files")){
-				fieldMap[i]=api+ fieldMap[i]
+				fieldMap[i]=this.api()+ fieldMap[i]
 			}
 		}
 		return fieldMap

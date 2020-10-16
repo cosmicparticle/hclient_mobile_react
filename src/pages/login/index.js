@@ -38,7 +38,7 @@ class Login extends Component {
 						Toast.info('服务器连接失败');
 					} else {
 						if(res.status === 'suc') {
-							window.location.href="/#/home";
+							window.location.href="./#/home";
 							Units.setLocalStorge("tokenName", res.token)
 						} else if(res.errorMsg) {
 							Toast.info(res.errorMsg);

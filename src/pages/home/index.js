@@ -38,6 +38,9 @@ class Home extends Component {
 				blockList=item.l1Menus
 			}
 		})
+		if(!blockList){
+			blockList=blocks[0].l1Menus
+		}
 		const menuTreeNode = this.renderMenu(blockList)
 		const data = this.renderdata(blockList)		
 		Storage.menuList=data   //普通菜单存储

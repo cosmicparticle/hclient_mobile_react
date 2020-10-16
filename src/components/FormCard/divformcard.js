@@ -10,7 +10,7 @@ export default class DivFormCard extends Component {
 
 		const {formItem, optionsMap, getFieldProps,formItemValueOnChange} = this.props
 		const key=formItem.code;
-		return	<div key={Units.RndNum(9)} className="formcard">
+		return	<div  className="formcard">
 				<FormCard
 					formItemValueOnChange={formItemValueOnChange}
 					formItem={formItem} getFieldProps={getFieldProps} optionsMap={optionsMap}></FormCard>

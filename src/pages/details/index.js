@@ -652,7 +652,7 @@ class Details extends Component {
 									{item.composite && item.lists?
 										item.lists.map((it,index)=>{
 											if(index<=item.limitLen){
-												return <div key={Units.RndNum(9)}>
+												return <div key={it.id+index}>
 															<EditList
 																rabcUnupdatable={!rabcTemplateupdatable}
 																unallowedDelete={unallowedDelete}
@@ -681,7 +681,7 @@ class Details extends Component {
 															:null}
 														</div>
 											}else{
-												return 	<div key={Units.RndNum(9)} style={{display:"none"}}>
+												return 	<div key={it.id+index} style={{display:"none"}}>
 															<EditList
 																rabcUnupdatable={rabcUnupdatable}
 																unallowedDelete={unallowedDelete}
@@ -699,7 +699,7 @@ class Details extends Component {
 										}):
 										item.fields.map((it, index) => {
 											if(index<=item.limitLen){
-												return <div key = {Units.RndNum(9)}>
+												return <div key = {it.id+index}>
 															<DivFormCard
 																formItemValueOnChange={this.formItemValueOnChange}
 																formItem = {it}

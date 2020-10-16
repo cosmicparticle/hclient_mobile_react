@@ -152,7 +152,9 @@ export default class FormCard extends Component {
 				}] : []
 				const imgPick = <ImgBox
 					files={files}
-					{...getFieldProps(fieldName)}
+					{...getFieldProps(fieldName,{
+						onChange:()=>formItemValueOnChange(fieldName)
+					})}
 				/>
 				return <div>
 					<List.Item extra={imgPick}>{title}</List.Item>
