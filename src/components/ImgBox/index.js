@@ -23,17 +23,17 @@ export default class ImgBox extends Component {
 // 			});
 // }else{
 		//只接收一次
-		if(!receivedFilesProps){
-			let files=nextProps.files;
-			this.setState({
-				files,
-				imgUrl:files?files[0]?files[0].url:"":"",
-				receivedFilesProps:true,
-			});
-		}
+		// if(!receivedFilesProps){
+		// 	let files=nextProps.files;
+		// 	this.setState({
+		// 		files,
+		// 		imgUrl:files?files[0]?files[0].url:"":"",
+		// 		receivedFilesProps:true,
+		// 	});
+		// }
 
 		// }
-		console.log(nextProps);
+		// console.log(nextProps);
 	}
 	onChange = (files, type) => {
 		console.log(files, type);
