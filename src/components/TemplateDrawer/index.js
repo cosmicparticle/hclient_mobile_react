@@ -13,6 +13,7 @@ export default class TemplateDrawer extends Component {
 		checkboxdata: [],
 		fieldWords: "",
 		showDrawer: false,
+		isEndList:false,
 		templateData: [],
 	}
 	onOpenChange = (item) => {
@@ -97,6 +98,7 @@ export default class TemplateDrawer extends Component {
 				templateData: res.entities,
 				showDrawer: true,
 				pageInfo:res.pageInfo,
+				isEndList:res.isEndList,
 				queryKey
 			})
 		})
@@ -145,7 +147,7 @@ export default class TemplateDrawer extends Component {
 	}
 	
 	render() {
-		const {showDrawer,pageInfo,templateData,queryKey} = this.state
+		const {showDrawer,pageInfo,isEndList,templateData,queryKey} = this.state
 		const totalPage = pageInfo ?pageInfo.virtualEndPageNo: ""
 		let sidebar = (<div className="sideBar">
                         <div className="drawerBtns">
@@ -165,7 +167,7 @@ export default class TemplateDrawer extends Component {
 								</List>
                             ):""
                         }
-                        {pageInfo&&totalPage>=(pageInfo.pageNo+1)?
+                        {isEndList===false?
                         <Button onClick={()=>this.goPage(queryKey,+1)}>点击加载下一页</Button>:
                         <p className="nomoredata">没有更多了···</p>}
                     </div>)

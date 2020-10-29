@@ -4,6 +4,7 @@ import { NavLink, withRouter } from 'react-router-dom'
 import Super from "../../super"
 import Nav from '../../components/Nav'
 import Storage from './../../units/storage'
+import Units from './../../units'
 import './index.less'
 const Item = Popover.Item;
 
@@ -89,7 +90,7 @@ class Home extends Component {
 		return(
 			<div className="home">
                 <Nav 
-                    title="HYDROCARBON" 
+                    title={Units.programTitle}
                     data={homeData} 
                     handleSelected={this.handlePop}
 					pops={homePop}

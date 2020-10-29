@@ -18,31 +18,38 @@ export default class ActTable extends Component {
 		searchList: [],
 		optArr: {},
 		animating: false,
+        isPagedQuery:false,
+		isEndList:false,
 		menuId:this.props.match.params.menuId
 	}
 	componentDidMount() {
 		const {menuId,url}=this.state
+		this.pushUrl(menuId,url);
+	}
+
+	pushUrl=(menuId,url)=>{
 		if(url) {
 			this.requestList(menuId, Units.urlToObj(url),true)
 		} else {
 			Storage[`${menuId}`]=null //刷新列表数据
 			this.requestList(menuId)
 		}
-	}
+}
+
 	componentWillUnmount() {
 		clearTimeout(this.closeTimer);
 	}
 	componentWillReceiveProps(nextProps){
+		let {isPagedQuery,isSearchQuery}=this.state;
 		const {menuId} = nextProps.match.params
-		this.setState({menuId,url})
+
 		const url = decodeURI(this.props.history.location.search) //获取url参数(页码)，并解码
 		this.setState({menuId,url})
-		// if(url) {
-		// 		// 	this.requestList(menuId, Units.urlToObj(url),true)
-		// 		// } else {
-		//         //     Storage[`${menuId}`]=null //刷新列表数据
-		// 		// 	this.requestList(menuId)
-		// 		// }
+		// if(!isPagedQuery && !isSearchQuery){
+			this.pushUrl(menuId,url);
+		//}
+		this.setState({menuId,url})
+
 
 	}
 	//isPushUrl=true时，后退获得的url已有参数，不需要push链接,不然会报错
@@ -52,6 +59,9 @@ export default class ActTable extends Component {
 		})
 		if(data && data.pageNo && data.pageSize && !isPushUrl) {
 			this.props.history.push(`/${menuId}?pageNo=${data.pageNo}&pageSize=${data.pageSize}`)
+		}
+		if(isPushUrl || !data){
+			this.setState({isPagedQuery:false,isSearchQuery:false})
 		}
 		Super.super({
 			url: `api2/entity/${menuId}/list/tmpl`,
@@ -84,6 +94,7 @@ export default class ActTable extends Component {
 					searchFieldIds:fieldIds,
 					animating: false,
 					tmplGroup:res.tmplGroup,
+
 				})
 				if(Storage[`${menuId}`] && !data){
 					const res= Storage[`${menuId}`]
@@ -129,6 +140,7 @@ export default class ActTable extends Component {
 			list:data.entities,
 			isStat,//判断列表是否是统计页
             pageInfo:data.pageInfo,
+			isEndList:data.isEndList,
             currentPage:data.pageInfo.pageNo,   
 			isSeeTotal:undefined,
             Loading:false,
@@ -195,11 +207,19 @@ export default class ActTable extends Component {
 				data[k] = searchwords[k]
 			}
 		}
+		this.setState({
+			isPagedQuery:true
+		});
 		this.requestList(menuId, data)
 		window.scrollTo(0, 0)
 	}
 	handleSearch = (values) => {
 		const {menuId} = this.state
+
+		this.setState({
+			isSearchQuery:true
+		});
+
 		this.requestList(menuId, values)
 		this.setState({
 			searchwords: values
@@ -255,30 +275,26 @@ export default class ActTable extends Component {
         }       
     }
 	render() {
-		const {menuTitle,list,showDrawer,searchList,optArr,pageInfo,animating,isSeeTotal,isStat,tmplGroup} = this.state
+		const {menuTitle,list,showDrawer,searchList,optArr,pageInfo,isEndList,animating,isSeeTotal,isStat,tmplGroup} = this.state
 		const data =Storage.menuList
 		let actPop;
 
 		const hideCreateButton=tmplGroup?tmplGroup.hideCreateButton:null;
 		const hideDeleteButton=tmplGroup?tmplGroup.hideDeleteButton:null;
 		const hideQueryButton=tmplGroup?tmplGroup.hideQueryButton:null;
+		actPop = [
+			(<Itempop key="5" value="home" icon={<span className="iconfont">&#xe62f;</span>}>首页</Itempop>),
+			(<Itempop key="1" value="user" icon={<span className="iconfont">&#xe74c;</span>}>用户</Itempop>),
+			(<Itempop key="2" value="login" icon={<span className="iconfont">&#xe739;</span>}>退出</Itempop>),
+		]
 		if(isStat){
-			actPop = [
-				(<Itempop key="5" value="home" icon={<span className="iconfont">&#xe62f;</span>}>首页</Itempop>),
-				(<Itempop key="1" value="user" icon={<span className="iconfont">&#xe74c;</span>}>用户</Itempop>),
-				(<Itempop key="2" value="login" icon={<span className="iconfont">&#xe739;</span>}>退出</Itempop>),
-			]
+
 		}else{
-			actPop = [
-				(<Itempop key="5" value="home" icon={<span className="iconfont">&#xe62f;</span>}>首页</Itempop>),
-				(<Itempop key="1" value="user" icon={<span className="iconfont">&#xe74c;</span>}>用户</Itempop>),
 
-				(<Itempop key="2" value="login" icon={<span className="iconfont">&#xe739;</span>}>退出</Itempop>),
-			]
-			if(!hideCreateButton){
-				actPop.push(<Itempop key="4" value="create" icon={<span className="iconfont">&#xe60a;</span>}>创建</Itempop>);
-			}
+		}
 
+		if(!hideCreateButton){
+			actPop.push(<Itempop key="4" value="create" icon={<span className="iconfont">&#xe60a;</span>}>创建</Itempop>);
 		}
 		if(!hideQueryButton) {
 			actPop.push(<Itempop key="3" value="search" icon={<span className="iconfont">&#xe72f;</span>}>筛选</Itempop>);
@@ -329,7 +345,7 @@ export default class ActTable extends Component {
                                 </Card>
                     ):""
                 }
-                {pageInfo && pageInfo.pageNo<pageInfo.virtualEndPageNo?
+                {isEndList===false?
 					<Button onClick={()=>this.goPage(+1)}>点击加载下一页</Button>:
 					<p className="nomoredata">没有更多了···</p>}
                 <Drawer

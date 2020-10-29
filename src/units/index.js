@@ -4,15 +4,20 @@ import Axios from "axios";
 
 // const api="http://116.62.163.143:81/stdempinfo/"
  const api=ProgramConfig.hydrocarbonServer;
+const programTitle=ProgramConfig.programTitle;
 
 //加载本地配置
 Axios.create().get('programConfig.json').then((result) => {
 	window.localStorage['hydrocarbonServer'] = result.data.hydrocarbonServer
+	window.localStorage['programTitle'] = result.data.programTitle
 }).catch((error) => { console.log(error) });
 
 export default {
 	api(){
 		return window.localStorage['hydrocarbonServer']?window.localStorage['hydrocarbonServer']:api;
+	},
+	programTitle(){
+		return window.localStorage['programTitle']?window.localStorage['programTitle']:programTitle;
 	},
 	formateDate(time) {
 		if(!time) return '';
