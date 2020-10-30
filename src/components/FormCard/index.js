@@ -19,7 +19,7 @@ export default class FormCard extends Component {
 	}
 	render() {
 
-		const {formItem, optionsMap, getFieldProps,formItemValueOnChange} = this.props
+		const {formItem, optionsMap, getFieldProps,formItemValueOnChange,unavailable} = this.props
 
 		const key=formItem.code;
 		if (formItem) {
@@ -32,7 +32,7 @@ export default class FormCard extends Component {
 			const fieldId = formItem.fieldId
 			const validators = formItem.validators
 			const type=formItem.type;
-			const available=formItem.fieldAccess && formItem.fieldAccess!=="读" && formItem.fieldAvailable ;
+			const available=unavailable?false:formItem.fieldAccess && formItem.fieldAccess!=="读" && formItem.fieldAvailable;
 			if (type === "text") {
 				return <InputItem
 					{...getFieldProps(fieldName, {

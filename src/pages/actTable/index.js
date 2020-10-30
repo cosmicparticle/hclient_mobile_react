@@ -302,7 +302,8 @@ export default class ActTable extends Component {
 
 		const sidebar = (<SearchForm 
                             searchList={searchList} 
-                            optArr={optArr} 
+                            optArr={optArr}
+							onOpenChange={this.onOpenChange}
                             handleSearch={this.handleSearch}            
                         />);
 		return(

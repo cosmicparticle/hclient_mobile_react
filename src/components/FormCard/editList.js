@@ -10,7 +10,7 @@ import MultiplePicker from './../MultiplePicker'
 export default class EditList extends Component {
 
     initFormList = () => {
-        const {formList,optionsMap,getFieldProps,isDrawer,rabcTemplateupdatable,formItemValueOnChange,unallowedDelete,rabcUnupdatable} = this.props
+        const {formList,optionsMap,getFieldProps,isDrawer,rabcTemplateupdatable,formItemValueOnChange,unallowedDelete,rabcUnupdatable,unmodifiable} = this.props
         const formItemList=[];
         let code;
         let namePrefix
@@ -22,7 +22,6 @@ export default class EditList extends Component {
                 if(item.name &&  item.name.indexOf(".")>0){
                     namePrefix=item.name.split(".")[0];
                 }
-
                 const type=item.type;
                 const key=item.code+index
                 if(type === "deletebtn" ){
@@ -41,7 +40,7 @@ export default class EditList extends Component {
                         </p>
                         formItemList.unshift(deletebtn)
                 }else{
-                    const formIt= <FormCard key={Units.RndNum(9)} formItemValueOnChange={formItemValueOnChange}
+                    const formIt= <FormCard  unavailable={unmodifiable} key={Units.RndNum(9)} formItemValueOnChange={formItemValueOnChange}
                         formItem={item} getFieldProps={getFieldProps} optionsMap={optionsMap}
                     ></FormCard>
                     formItemList.push(formIt);

@@ -24,6 +24,11 @@ class SearchForm extends Component {
 			this.props.handleSearch(values)
 		})
 	}
+
+	hide=()=>{
+		this.props.onOpenChange();
+	}
+
 	reset = () => {
 		this.props.form.resetFields()
 	}
@@ -34,33 +39,36 @@ class SearchForm extends Component {
 		return(
 			<div className="searchForm">
                 <List renderHeader={() => '查询条件'}>
-                    {
-                        searchList.map(item =>
-                            <SearchCard 
-                                key={item.id} 
-                                formList={item}
-                                optArr={optArr}
-                                getFieldProps={getFieldProps}
-                            />
-                        )
+					{  searchList!=undefined?
+						searchList.map(item =>
+							<SearchCard
+								key={item.id}
+								formList={item}
+								optArr={optArr}
+								getFieldProps={getFieldProps}
+							/>
+						)
+					:null
                     }                                    
                     </List>
-                    <List renderHeader={() => `根据字段${order?"顺序":"逆序"}`}>
-                        <Item
-                            extra={<Switch
-                            checked={order}
-                            key={order}
-                            onChange={() => {
-                                this.setState({
-                                    order: !order,
-                                });
-                            }}
-                        />}
-                        >{order?"顺序":"逆序"}</Item>
-                        <Picker data={[[{label:"上海",value:"1",key:"1"},{label:"杭州",value:"2",key:"2"}]]} cols={1}>
-                            <Item arrow="horizontal">字段</Item>
-                        </Picker>
-                    </List>
+
+                    {/*<List renderHeader={() => `根据字段${order?"顺序":"逆序"}`}>*/}
+                    {/*    <Item*/}
+                    {/*        extra={<Switch*/}
+                    {/*        checked={order}*/}
+                    {/*        key={order}*/}
+                    {/*        onChange={() => {*/}
+                    {/*            this.setState({*/}
+                    {/*                order: !order,*/}
+                    {/*            });*/}
+                    {/*        }}*/}
+                    {/*    />}*/}
+                    {/*    >{order?"顺序":"逆序"}</Item>*/}
+                    {/*    <Picker data={[[{label:"上海",value:"1",key:"1"},{label:"杭州",value:"2",key:"2"}]]} cols={1}>*/}
+                    {/*        <Item arrow="horizontal">字段</Item>*/}
+                    {/*    </Picker>*/}
+                    {/*</List>*/}
+
                     <List renderHeader={() => '页码'}>
                         <InputItem
                             placeholder={`请输入页码`}
@@ -73,7 +81,8 @@ class SearchForm extends Component {
                             {...getFieldProps("pageSize")}
                             >显示条数</InputItem>
                     </List>
-                    <div className="searchButton">
+                    <div className="drawerBtns">
+						<Button type="warning" inline size="small" onClick={this.hide}>收起</Button>
                         <Button type="warning" inline size="small" onClick={this.reset}>重置</Button>
                         <Button type="primary" inline size="small" onClick={this.submit}>查询</Button>
                     </div>

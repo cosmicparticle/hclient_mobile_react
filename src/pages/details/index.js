@@ -335,7 +335,7 @@ class Details extends Component {
 			code
 		}
 		//如果之前已存在，如编辑的情况，移除原本的数据
-		this.deleteList(code)
+		this.deleteList(code,true);
 		list.lists.unshift(res)
 		dtmplGroup.forEach((item,index)=>{
 			if(item.id===list.id){
@@ -354,6 +354,7 @@ class Details extends Component {
 				dtmplGroup.forEach((item)=>{
 					if(item.composite){
 						values[`${item.composite.cname}.$$flag$$`] = true
+						valueChangedItemNameList.push(`${item.composite.cname}.$$flag$$`);
 					}
 				})
 				for(let k in values){
@@ -453,14 +454,17 @@ class Details extends Component {
 			this.addList(addModal)
 		})	
 	}
-	deleteList = (code) => {
+	deleteList = (code,notShowToast) => {
 		let {dtmplGroup} = this.state
 		dtmplGroup.forEach((item) => {
 			if(item.composite) {
 				item.lists = item.lists.filter((it) => it.code.includes(code)===false)
 			}
 		})
-		Toast.success("删除成功！")
+		if(!notShowToast){
+			Toast.success("删除成功！")
+		}
+
 		this.setState({
 			dtmplGroup
 		})
@@ -603,14 +607,23 @@ class Details extends Component {
 						</List>
 					:null}
 					<div>
-						{dtmplGroup && dtmplGroup.map((item, i) => {
+
+						{
+							dtmplGroup && dtmplGroup.map((item, i) => {
 							const selectionTemplateId=item.selectionTemplateId
 							const dialogSelectType=item.dialogSelectType
-							const haveTemplate=(selectionTemplateId || item.rabcTemplateGroupId || item.rabcTreeTemplateId)?true:false
+							const haveTemplate=dialogSelectType && (selectionTemplateId || item.rabcTemplateGroupId || item.rabcTreeTemplateId)?true:false
 							const rabcUncreatable=item.rabcUncreatable
 							const rabcUnupdatable=item.rabcUnupdatable
-							const rabcTemplateGroupId=item.rabcTemplateGroupId
-							const unallowedCreate=item.unallowedCreate
+							const rabcTemplateGroupId=item.rabcTemplateGroupId;
+
+							const unallowedCreate=item.unallowedCreate;
+
+							let unmodifiable=false;
+							if(unallowedCreate && unallowedCreate==1 ){//临时用新增来控制
+								unmodifiable=true;
+							}
+
 							const unallowedDelete=item.unallowedDelete
 							let rabcTemplatecreatable=false
 							let rabcTemplateupdatable=false
@@ -620,6 +633,8 @@ class Details extends Component {
 							if(rabcTemplateGroupId && rabcUnupdatable!=1){
 								rabcTemplateupdatable=true
 							}
+							const maxDataCount=item.composite?item.composite.maxDataCount?item.composite.maxDataCount:0:0;
+							const cardButtonDisabled=item.composite?(item.lists?item.lists.length>=1 && maxDataCount===1?true:false:false):true;
 							return <List
 										id = {item.title}	
 										key = {`${item.id}[${i}]`}
@@ -628,17 +643,17 @@ class Details extends Component {
 												<span> {item.title}{item.composite && item.lists?`(共${item.lists.length}条)`:null} </span>
 												{item.composite ?
 													<div className = "detailButtons" >
-														{unallowedCreate?null:
+														{unallowedCreate || cardButtonDisabled ?null:
 														<span className = "iconfont"
 															onClick = {() => this.addList(item)} > &#xe63d;
 														</span>}
-														{haveTemplate && !isDrawer ?
+														{haveTemplate && !isDrawer && !cardButtonDisabled ?
 															<span className="iconfont"
 																  onClick={() => this.SelectTemplate.onOpenChange(item)}>
 															&#xe6f4; 
 														</span>:null
 														}
-														{rabcTemplatecreatable && !isDrawer? // 判断是否是弹出的抽屉
+														{rabcTemplatecreatable && !isDrawer ? // 判断是否是弹出的抽屉
 														<span className = "iconfont"
 															onClick = {() =>this.editTemplate(true,null,item.id)} >
 															&#xe61b;
@@ -656,6 +671,7 @@ class Details extends Component {
 															<EditList
 																rabcUnupdatable={!rabcTemplateupdatable}
 																unallowedDelete={unallowedDelete}
+																unmodifiable={unmodifiable}
 																formItemValueOnChange={this.formItemValueOnChange}
 																formList = {it}
 																getFieldProps = {getFieldProps}
