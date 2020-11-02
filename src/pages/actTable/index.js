@@ -20,19 +20,25 @@ export default class ActTable extends Component {
 		animating: false,
         isPagedQuery:false,
 		isEndList:false,
-		menuId:this.props.match.params.menuId
+		isHistory:false,
+		menuId:this.props.match.params.menuId,
+		searchwords:{pageNo:1,pageSize:10}
 	}
 	componentDidMount() {
-		const {menuId,url}=this.state
-		this.pushUrl(menuId,url);
+		const {menuId}=this.state
+		const url=decodeURI(this.props.history.location.search)
+		this.pushUrl(menuId,url,true);
 	}
 
-	pushUrl=(menuId,url)=>{
+	pushUrl=(menuId,url,isPushUrl)=>{
+		let {searchwords}=this.state;
+		let pageInfo=url?Units.urlToObj(url):searchwords;
+		//this.props.history.push(`/${menuId}?pageNo=${pageInfo.pageNo?pageInfo.pageNo:1}&pageSize=${pageInfo.pageSize?pageInfo.pageSize:10}`)
 		if(url) {
-			this.requestList(menuId, Units.urlToObj(url),true)
+			this.requestList(menuId,pageInfo,isPushUrl)
 		} else {
 			Storage[`${menuId}`]=null //刷新列表数据
-			this.requestList(menuId)
+			this.requestList(menuId,null,isPushUrl)
 		}
 }
 
@@ -40,33 +46,32 @@ export default class ActTable extends Component {
 		clearTimeout(this.closeTimer);
 	}
 	componentWillReceiveProps(nextProps){
-		let {isPagedQuery,isSearchQuery}=this.state;
-		const {menuId} = nextProps.match.params
-
-		const url = decodeURI(this.props.history.location.search) //获取url参数(页码)，并解码
-		this.setState({menuId,url})
-		// if(!isPagedQuery && !isSearchQuery){
-			this.pushUrl(menuId,url);
-		//}
-		this.setState({menuId,url})
-
-
+		// const {menuId} = nextProps.match.params
+		// let urlParam=this.props.history.location.search;
+		// let nextParam=nextProps.location.search;
+		// const url = decodeURI(this.props.history.location.search) //获取url参数(页码)，并解码
+		//  let {isHistory}=this.state;
+		// // let pageInfo=url?Units.urlToObj(url):searchwords;
+		//  if(urlParam!=nextParam){
+		// 	this.pushUrl(menuId,url,true);
+		// }
+		 //else{
+		// 	this.setState({
+		// 		isHistory:true,
+		// 	});
+		// }
 	}
 	//isPushUrl=true时，后退获得的url已有参数，不需要push链接,不然会报错
-	requestList = (menuId, data, isPushUrl) => {
+	requestList = (menuId, searchwords_, isPushUrl) => {
 		this.setState({
 			animating: true
 		})
-		if(data && !isPushUrl) {
-			this.props.history.push(`/${menuId}?pageNo=${data.pageNo?data.pageNo:1}&pageSize=${data.pageSize?data.pageSize:10}`)
-		}
-		if(isPushUrl || !data){
-			this.setState({isPagedQuery:false,isSearchQuery:false})
-		}
+		let searchwords=searchwords_?searchwords_:this.state.searchwords;
+
 		Super.super({
 			url: `api2/entity/${menuId}/list/tmpl`,
 			method:'GET',
-			query:data,
+			query:searchwords,
 		}).then((res) => {
 			document.removeEventListener('touchmove', this.bodyScroll, {
 				passive: false
@@ -88,28 +93,34 @@ export default class ActTable extends Component {
 				this.setState({
 					menuTitle: res.menu.title,
 					listLtmpl: res.ltmpl.columns,
-					queryKey:res.queryKey,
 					searchList: res.ltmpl.criterias,
 					showDrawer: false,
 					searchFieldIds:fieldIds,
 					animating: false,
 					tmplGroup:res.tmplGroup,
+					queryKey:res.queryKey,
+					searchwords:searchwords,
 				})
-				if(Storage[`${menuId}`] && !data){
-					const res= Storage[`${menuId}`]
-					this.sessionTodo(res)
-				}else{
-					this.queryList(res.queryKey,data)
-				}
+				// if(Storage[`${menuId}`] && !data){
+				// 	const res= Storage[`${menuId}`]
+				// 	this.sessionTodo(res)
+				// }else{
+				// let pageInfo=searchwords;
+					this.queryList(searchwords,isPushUrl);
+				//}
 			}
 		 })
 	}
-	queryList=(queryKey,data)=>{
-        const {menuId}=this.state
+	queryList=(searchwords,isPushUrl)=>{
+        const {menuId,queryKey,}=this.state
+		const searchStr=Units.queryParams(searchwords);
+		if(!isPushUrl){
+			this.props.history.push(`/${menuId}?${searchStr}`)
+		}
 		Super.super({
 			url:`api2/entity/list/${queryKey}/data`,
 			method:'GET',
-			query:data
+			query:searchwords
 		}).then((res)=>{
 			Storage[`${menuId}`]=res
 			this.sessionTodo(res)
@@ -135,10 +146,11 @@ export default class ActTable extends Component {
 				}
 			})
 		})
+
         this.setState({
 			list:data.entities,
 			isStat,//判断列表是否是统计页
-            pageInfo:data.pageInfo,
+			searchwords:{...this.state.searchwords,pageNo:data.pageInfo.pageNo,pageSize:data.pageInfo.pageSize},
 			isEndList:data.isEndList,
            // currentPage:data.pageInfo.pageNo,
 			isSeeTotal:undefined,
@@ -195,34 +207,23 @@ export default class ActTable extends Component {
 		// }
 	}
 	nextPage = (no) => {
-		const {pageInfo,menuId,searchwords} = this.state
-		let data = {}
-		data.pageSize = pageInfo.pageSize
-		for(let k in searchwords) {
-			if(searchwords[k]) {
-				data[k] = searchwords[k]
-			}
-		}
-		const topageNo = pageInfo.pageNo + no
-		data.pageNo = topageNo
-
-		this.setState({
-			isPagedQuery:true
-		});
-		this.requestList(menuId, data)
+		const {menuId,searchwords} = this.state
+		let pageInfo = {}
+		pageInfo.pageSize = searchwords.pageSize
+		// for(let k in searchwords) {
+		// 	if(searchwords[k]) {
+		// 		data[k] = searchwords[k]
+		// 	}
+		// }
+		const topageNo = searchwords.pageNo + no
+		pageInfo.pageNo = topageNo
+		this.queryList(pageInfo);
+		//this.requestList(menuId, data)
 		window.scrollTo(0, 0)
 	}
 	handleSearch = (values) => {
 		const {menuId} = this.state
-
-		this.setState({
-			isSearchQuery:true
-		});
-
-		this.requestList(menuId, values)
-		this.setState({
-			searchwords: values
-		})
+		this.requestList(menuId,values)
 	}
 	showAlert = (code, e) => {
 		e.stopPropagation()
@@ -274,7 +275,7 @@ export default class ActTable extends Component {
         }       
     }
 	render() {
-		const {menuTitle,list,showDrawer,searchList,optArr,pageInfo,isEndList,animating,isSeeTotal,isStat,tmplGroup} = this.state
+		const {menuTitle,list,showDrawer,searchList,optArr,searchwords,isEndList,animating,isSeeTotal,isStat,tmplGroup} = this.state
 		const data =Storage.menuList
 		let actPop;
 
@@ -314,11 +315,11 @@ export default class ActTable extends Component {
                 pops={actPop}
                 />
                 <div className="topbox">                    
-                    {pageInfo && pageInfo.pageNo!==1?
+                    {searchwords && searchwords.pageNo!==1?
                     <Button size="small" inline onClick={()=>this.nextPage(-1)}>
                     上一页</Button>:""}                   
                     <span className="pageNo">
-						{pageInfo?`第${pageInfo.pageNo}页，`:""}
+						{searchwords?`第${searchwords.pageNo}页，`:""}
 						{isSeeTotal!==undefined?`共${isSeeTotal}条`:<span onClick={this.seeTotal}>点击查看总数</span>}
                     </span>
                 </div>
@@ -327,7 +328,7 @@ export default class ActTable extends Component {
                         <Card key={item.code} onClick={isStat?()=>Toast.info("无详情页"):()=>this.cardClick(item.code)}>
                                     <Card.Header
 										title={<span style={{color:"#ccc"}}>
-											{pageInfo?((pageInfo.pageNo-1)*pageInfo.pageSize+index+1):""}
+											{searchwords?((searchwords.pageNo-1)*searchwords.pageSize+index+1):""}
 										</span>}
 
                                         extra={isStat || hideDeleteButton?null:<span
