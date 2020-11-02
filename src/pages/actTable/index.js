@@ -57,8 +57,8 @@ export default class ActTable extends Component {
 		this.setState({
 			animating: true
 		})
-		if(data && data.pageNo && data.pageSize && !isPushUrl) {
-			this.props.history.push(`/${menuId}?pageNo=${data.pageNo}&pageSize=${data.pageSize}`)
+		if(data && !isPushUrl) {
+			this.props.history.push(`/${menuId}?pageNo=${data.pageNo?data.pageNo:1}&pageSize=${data.pageSize?data.pageSize:10}`)
 		}
 		if(isPushUrl || !data){
 			this.setState({isPagedQuery:false,isSearchQuery:false})
@@ -94,7 +94,6 @@ export default class ActTable extends Component {
 					searchFieldIds:fieldIds,
 					animating: false,
 					tmplGroup:res.tmplGroup,
-
 				})
 				if(Storage[`${menuId}`] && !data){
 					const res= Storage[`${menuId}`]
@@ -141,10 +140,9 @@ export default class ActTable extends Component {
 			isStat,//判断列表是否是统计页
             pageInfo:data.pageInfo,
 			isEndList:data.isEndList,
-            currentPage:data.pageInfo.pageNo,   
+           // currentPage:data.pageInfo.pageNo,
 			isSeeTotal:undefined,
             Loading:false,
-            pageSize:data.pageInfo.pageSize,
         })
     }
 	handlePop = (value) => {
@@ -196,17 +194,18 @@ export default class ActTable extends Component {
 		// 	})
 		// }
 	}
-	goPage = (no) => {
+	nextPage = (no) => {
 		const {pageInfo,menuId,searchwords} = this.state
 		let data = {}
-		const topageNo = pageInfo.pageNo + no
-		data.pageNo = topageNo
 		data.pageSize = pageInfo.pageSize
 		for(let k in searchwords) {
 			if(searchwords[k]) {
 				data[k] = searchwords[k]
 			}
 		}
+		const topageNo = pageInfo.pageNo + no
+		data.pageNo = topageNo
+
 		this.setState({
 			isPagedQuery:true
 		});
@@ -316,7 +315,7 @@ export default class ActTable extends Component {
                 />
                 <div className="topbox">                    
                     {pageInfo && pageInfo.pageNo!==1?
-                    <Button size="small" inline onClick={()=>this.goPage(-1)}>
+                    <Button size="small" inline onClick={()=>this.nextPage(-1)}>
                     上一页</Button>:""}                   
                     <span className="pageNo">
 						{pageInfo?`第${pageInfo.pageNo}页，`:""}
@@ -347,7 +346,7 @@ export default class ActTable extends Component {
                     ):""
                 }
                 {isEndList===false?
-					<Button onClick={()=>this.goPage(+1)}>点击加载下一页</Button>:
+					<Button onClick={()=>this.nextPage(+1)}>点击加载下一页</Button>:
 					<p className="nomoredata">没有更多了···</p>}
                 <Drawer
                     className={showDrawer?"openDrawer":"shutDraw"}
