@@ -186,15 +186,15 @@ export default class ActTable extends Component {
 		this.setState({
 			showDrawer: !showDrawer
 		});
-		if(showDrawer) { //固定页面
-			document.removeEventListener('touchmove', this.bodyScroll, {
-				passive: false
-			})
-		} else {
-			document.addEventListener('touchmove', this.bodyScroll, {
-				passive: false
-			})
-		}
+		// if(showDrawer) { //固定页面
+		// 	document.removeEventListener('touchmove', this.bodyScroll, {
+		// 		passive: false
+		// 	})
+		// } else {
+		// 	document.addEventListener('touchmove', this.bodyScroll, {
+		// 		passive: false
+		// 	})
+		// }
 	}
 	goPage = (no) => {
 		const {pageInfo,menuId,searchwords} = this.state

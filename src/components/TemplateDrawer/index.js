@@ -198,14 +198,13 @@ export default class TemplateDrawer extends Component {
 			showSearchDrawer: !showSearchDrawer
 		});
 		if(showSearchDrawer) { //固定页面
-			document.removeEventListener('touchmove', this.bodyScroll, {
-				passive: false
-			})
-
+			// document.removeEventListener('touchmove', this.bodyScroll, {
+			// 	passive: false
+			// })
 		} else {
-			document.addEventListener('touchmove', this.bodyScroll, {
-				passive: false
-			})
+			// document.addEventListener('touchmove', this.bodyScroll, {
+			// 	passive: false
+			// })
 			this.getSearchOptions();
 		}
 	}

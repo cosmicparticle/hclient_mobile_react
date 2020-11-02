@@ -194,8 +194,9 @@ class Details extends Component {
 						}
 						it.list.push(relation)
 					}					
-					for(let k in it.fieldMap){
+
 						model.forEach((i)=>{
+							for(let k in it.fieldMap){
 							if(k===i.id.toString()){
 								const lastname=i.name.split(".")[1]
 								const record={
@@ -210,8 +211,8 @@ class Details extends Component {
 								}
 								it.list.push(Units.forPic(record))
 							}
-						})
-					}
+						}
+					})
 				})
 			}else{				
 				item.limitLen=4
@@ -653,7 +654,7 @@ class Details extends Component {
 															&#xe6f4; 
 														</span>:null
 														}
-														{rabcTemplatecreatable && !isDrawer ? // 判断是否是弹出的抽屉
+														{rabcTemplatecreatable && !cardButtonDisabled && !isDrawer ? // 判断是否是弹出的抽屉
 														<span className = "iconfont"
 															onClick = {() =>this.editTemplate(true,null,item.id)} >
 															&#xe61b;

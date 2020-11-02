@@ -25,7 +25,7 @@ export default class FormCard extends Component {
 		if (formItem) {
 			const fieldName = formItem.name
 			let fieldValue = formItem.value;
-			if (fieldValue && fieldValue instanceof String   && fieldValue.indexOf("@R@") > 0) {
+			if (fieldValue && fieldValue.indexOf("@R@") > 0) {
 				fieldValue = fieldValue.split("@R@")[1];
 			}
 			const title = formItem.title
@@ -42,14 +42,31 @@ export default class FormCard extends Component {
 						}] : "",
 						onChange:()=>formItemValueOnChange(fieldName)
 					})}
-
-
 					placeholder={`请输入${title}`}
 					key={fieldId}
 					editable={available === false ? false : true}
 					clear
 				><Badge dot={validators ? true : false}>{title}</Badge></InputItem>
-			}if (type === "hidden") {
+			}if (type === "refselect") {//引用属性，暂不支持编辑
+				let textValue=fieldValue;
+				// if(fieldValue && fieldValue.indexOf("@R@")>0){
+				// 	textValue=fieldValue.split("@R@")[1];
+				// }
+				return <InputItem
+					{...getFieldProps(fieldName, {
+						initialValue: textValue ? textValue : "",
+						rules: validators ? [{
+							required: true, message: `请选择${title}`,
+						}] : "",
+						onChange:()=>formItemValueOnChange(fieldName)
+					})}
+					placeholder={`请输入${title}`}
+					key={fieldId}
+					editable={false}
+					clear
+				><Badge dot={validators ? true : false}>{title}</Badge></InputItem>
+			}
+			if (type === "hidden") {
 				return <InputItem
 					{...getFieldProps(fieldName, {
 						initialValue: fieldValue ? fieldValue : "",
