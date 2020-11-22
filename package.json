@@ -2,9 +2,11 @@
   "name": "my-app-mobile",
   "version": "0.1.0",
   "private": true,
+  "homepage": "./",
   "dependencies": {
-    "rc-form": "^2.4.11",
+    "@hanyk/rc-viewer": "0.0.3",
     "axios": "^0.18.0",
+    "rc-form": "^2.4.11",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
     "react-router-dom": "^4.3.1",

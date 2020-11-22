@@ -1,6 +1,7 @@
 import React, {Component} from 'react'
-import { ImagePicker } from 'antd-mobile';
+import {ImagePicker, Modal} from 'antd-mobile';
 import RcViewer from '@hanyk/rc-viewer'
+const alert = Modal.alert;
 
 export default class ImgBox extends Component {
 
@@ -36,14 +37,31 @@ export default class ImgBox extends Component {
 		// console.log(nextProps);
 	}
 	onChange = (files, type) => {
-		console.log(files, type);
+		//console.log(files, type);
 		// let isRemove=type==="remove"?true:false;
-		this.setState({
-			files,
-		});
+
 		if(type==="remove"){
-			this.triggerChange( "removefile");
+			const alertInstance = alert('删除操作', '确认删除此图片吗???', [{
+				text: '取消',
+			},
+				{
+					text: '确认',
+					onPress: () => {
+						this.setState({
+							files,
+						});
+						this.triggerChange( "removefile");}
+				},
+			]);
+			setTimeout(() => {
+				// 可以调用close方法以在外部close
+				alertInstance.close();
+			}, 10000);
+
 		}else{
+			this.setState({
+				files,
+			});
 			this.triggerChange(files.length > 0 ? files[0].file : "");
 		}
 	}
@@ -53,8 +71,6 @@ export default class ImgBox extends Component {
 			onChange(changedValue);
 		}
 	}
-
-
 
 	onImageClick=(index,files)=>{
 		const { viewer } = this.refs.viewer;

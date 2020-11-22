@@ -137,7 +137,7 @@ export default {
 				_result.push(str + '=' + encodeURI(value))
 			}
 		}
-
+		_result.push('isHistory=true');
 		return _result.length ? prefix + _result.join('&') : ''
 	},
 	urlToObj(str) {
@@ -145,6 +145,9 @@ export default {
 		const arr1 = str.split("?");
 		const arr2 = arr1[1].split("&");
 		for(let i = 0; i < arr2.length; i++) {
+			if(arr2[i]==='isHistory=true'){
+				continue;
+			}
 			const res = arr2[i].split("=");
 			const str = res[0].replace("c", "criteria")
 			obj[str] = res[1];
